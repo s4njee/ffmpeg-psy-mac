@@ -9,7 +9,7 @@ on:
       - "v*.*.*"
 jobs:
   build:
-    runs-on: ffmpeg-builder
+    runs-on: ffmpeg-builder-psy
     env:
 #      CC: gcc-14
 #      CXX: g++-14
