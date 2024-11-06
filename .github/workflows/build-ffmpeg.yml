@@ -2,7 +2,7 @@ name: Build FFmpeg
 
 on:
   schedule:
-    - cron: '0 1 * * *' # Runs every day
+    - cron: '0 6 * * *' # Runs every day
   workflow_dispatch: # Allows manual triggering
   push:
     tags:
