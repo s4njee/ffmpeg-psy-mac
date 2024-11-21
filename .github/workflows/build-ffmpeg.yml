@@ -13,9 +13,9 @@ jobs:
     env:
       #      CC: gcc-14
       #      CXX: g++-14
-      CFLAGS: -O2 -pipe -flto=auto
-      CXXFLAGS: -O2 -pipe -flto=auto
-      LDFLAGS: -O2 -pipe -flto=auto
+      CFLAGS: -O2 -pipe -fno-lto
+      CXXFLAGS: -O2 -pipe -fno-lto
+      LDFLAGS: -O2 -pipe -fno-lto
     steps:
       - name: Compare Commits
         run: |
@@ -88,9 +88,9 @@ jobs:
           make -j$(nproc)
           ./ffmpeg -version
         env:
-          CFLAGS: -O2 -pipe
-          CXXFLAGS: -O2 -pipe
-          LDFLAGS: -O2 -pipe
+          CFLAGS: -O2 -pipe -fno-lto
+          CXXFLAGS: -O2 -pipe -fno-lto
+          LDFLAGS: -O2 -pipe -fno-lto
       - name: Package FFmpeg
         run: |
           cd ffmpeg
