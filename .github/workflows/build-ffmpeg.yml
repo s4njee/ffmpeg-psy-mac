@@ -70,6 +70,8 @@ jobs:
           ninja && \
           ninja install
           cd ..
+      - name: AOM & FFMPEG
+        run: |
           git -C aom pull 2> /dev/null || git clone --depth 1 https://aomedia.googlesource.com/aom && \
           mkdir -p aom_build && \
           cd aom_build && \
@@ -85,7 +87,10 @@ jobs:
           PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure   --extra-cflags="-I$HOME/ffmpeg_build/include" --extra-ldflags="-L$HOME/ffmpeg_build/lib" --extra-libs="-lpthread -lm" --enable-gpl --enable-libx264 --enable-libx265 --enable-libvpx --enable-libfdk-aac --enable-libmp3lame --enable-libopus --enable-libvorbis --enable-libass --enable-libsvtav1 --enable-libaom --enable-libdav1d --enable-nonfree --enable-static --pkg-config-flags="--static" --disable-shared
           make -j$(nproc)
           ./ffmpeg -version
-
+        env:
+          CFLAGS: -O2 -pipe
+          CXXFLAGS: -O2 -pipe
+          LDFLAGS: -O2 -pipe
       - name: Package FFmpeg
         run: |
           cd ffmpeg
