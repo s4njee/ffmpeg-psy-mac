@@ -1,0 +1,76 @@
+name: Build FFmpeg
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Runs every day
+  workflow_dispatch: # Allows manual triggering
+  push:
+    tags:
+      - "v*.*.*"
+jobs:
+  build:
+    runs-on: ffmpeg-builder-psy
+    env:
+#      CC: gcc-14
+#      CXX: g++-14
+      CFLAGS: -O2 -pipe -flto=auto
+      CXXFLAGS: -O2 -pipe -flto=auto
+      LDFLAGS: -O2 -pipe -flto=auto
+    steps:
+      - name: Compare Commits
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdav1d-dev libaom-dev libfdk-aac-dev libvpx-dev libopus-dev libx264-dev libx265-dev zip
+          mkdir bin
+          
+          git clone --depth 1 https://github.com/gianni-rosato/svt-av1-psy.git  
+          cd svt-av1-psy
+          git fetch origin
+          git checkout master
+
+          cd Build
+          cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc) && \
+          sudo make install
+      - name: Build x265
+        run: |
+          wget -O x265.tar.bz2 https://bitbucket.org/multicoreware/x265_git/get/master.tar.bz2 && \
+          tar xjvf x265.tar.bz2 && \
+          cd multicoreware*/build/linux && \
+          PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" -DENABLE_SHARED=off ../../source && \
+          PATH="$HOME/bin:$PATH" make -j$(nproc) && \
+          sudo make install
+      - name: Clone FFmpeg
+        run: |
+          git clone --depth 1 https://git.ffmpeg.org/ffmpeg.git ffmpeg
+          cd ffmpeg
+          git checkout master
+      - name: Build FFmpeg
+        run: |
+          cd ffmpeg
+          export LD_LIBRARY_PATH+=":/usr/local/lib"
+          ./configure   --extra-cflags="-I$HOME/ffmpeg_build/include" --extra-ldflags="-L$HOME/ffmpeg_build/lib" --extra-libs="-lpthread -lm" --enable-gpl --enable-libx264 --enable-libx265 --enable-libvpx --enable-libfdk-aac --enable-libmp3lame --enable-libopus --enable-libvorbis --enable-libass --enable-libsvtav1 --enable-libaom --enable-libdav1d --enable-nonfree --enable-static --pkg-config-flags="--static" --disable-shared
+          make -j$(nproc)
+          ./ffmpeg -version
+        env:
+          CFLAGS: -O2 -pipe
+          CXXFLAGS: -O2 -pipe
+          LDFLAGS: -O2 -pipe
+
+
+      - name: Package FFmpeg
+        run: |
+          cd ffmpeg
+          mkdir ffmpeg-package
+          cp ./ffmpeg ffmpeg-package/
+          cp ./ffprobe ffmpeg-package/
+          zip -r ../ffmpeg-package.zip ffmpeg-package
+
+      - name: Get current date
+        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ffmpeg-package.zip
+          tag_name: ${{ env.DATE }}
