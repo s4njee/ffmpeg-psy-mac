@@ -20,7 +20,7 @@ jobs:
       - name: Compare Commits
         run: |
           sudo apt-get update
-          sudo apt-get install -y libdav1d-dev libaom-dev libfdk-aac-dev libvpx-dev libopus-dev libx264-dev libx265-dev zip
+          sudo apt-get install -y libdav1d-dev libaom-dev libfdk-aac-dev libvpx-dev libopus-dev libx264-dev libx265-dev zip meson
           mkdir bin
 
           git clone --depth 1 https://github.com/gianni-rosato/svt-av1-psy.git  
