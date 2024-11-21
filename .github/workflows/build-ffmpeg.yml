@@ -50,12 +50,6 @@ jobs:
           make -j$(nproc) && \
           make install
           cd ..
-          git -C libvpx pull 2> /dev/null || git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git && \
-          cd libvpx && \
-          PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm && \
-          PATH="$HOME/bin:$PATH" make -j$(nproc) && \
-          make install
-          cd ..
           git -C fdk-aac pull 2> /dev/null || git clone --depth 1 https://github.com/mstorsjo/fdk-aac && \
           cd fdk-aac && \
           autoreconf -fiv && \
@@ -72,6 +66,12 @@ jobs:
           cd ..
       - name: AOM & FFMPEG
         run: |
+          git -C libvpx pull 2> /dev/null || git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git && \
+          cd libvpx && \
+          PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm && \
+          PATH="$HOME/bin:$PATH" make -j$(nproc) && \
+          make install
+          cd ..
           git -C aom pull 2> /dev/null || git clone --depth 1 https://aomedia.googlesource.com/aom && \
           mkdir -p aom_build && \
           cd aom_build && \
