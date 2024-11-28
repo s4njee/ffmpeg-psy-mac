@@ -33,7 +33,7 @@ jobs:
           wget -O x265.tar.bz2 https://bitbucket.org/multicoreware/x265_git/get/master.tar.bz2 && \
           tar xjvf x265.tar.bz2 && \
           cd multicoreware*/build/linux && \
-          PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED=off ../../source && \
+          PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED=off -DHIGH_BIT_DEPTH=ON ../../source && \
           PATH="$HOME/bin:$PATH" make -j$(nproc) && \
           make install
           cd ../../..
