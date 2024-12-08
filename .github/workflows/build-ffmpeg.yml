@@ -41,7 +41,6 @@ jobs:
           --libdir="../ffmpeg_build.user"/lib \
           --includedir="../ffmpeg_build.user"/include
           cd ../ffmpeg_build.user || exit
-          sudo rm /usr/local/include/libdovi /usr/local/lib/libdovi.*
           sudo cp ./lib/* /usr/local/lib/ -r || exit
           sudo cp ./include/* /usr/local/include/ -r
           cd
