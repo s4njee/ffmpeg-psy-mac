@@ -22,6 +22,37 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libdav1d-dev libaom-dev libfdk-aac-dev libvpx-dev libopus-dev libx264-dev libx265-dev zip meson \
             nasm autogen automake libtool libfreetype6-dev libfontconfig1-dev libfribidi-dev
+      - name: Build HDR Stuff
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+          git clone --depth 1 https://github.com/quietvoid/dovi_tool
+          cd dovi_tool || exit
+          rm -rf ffmpeg_build.user && mkdir ffmpeg_build.user || exit
+          source "$HOME/.cargo/env" # for good measure
+          cargo clean
+          cargo build --release
+          sudo cp target/release/dovi_tool /usr/local/bin/ 
+
+          cd dolby_vision
+          cargo install --release \
+          --prefix="../ffmpeg_build.user" \
+          --libdir="../ffmpeg_build.user"/lib \
+          --includedir="../ffmpeg_build.user"/include
+          cd ../ffmpeg_build.user || exit
+          sudo rm /usr/local/include/libdovi /usr/local/lib/libdovi.*
+          sudo cp ./lib/* /usr/local/lib/ -r || exit
+          sudo cp ./include/* /usr/local/include/ -r
+          cd
+
+          git clone --depth 1 https://github.com/quietvoid/hdr10plus_tool
+          cd hdr10plus_tool
+          rm -rf ffmpeg_build.user && mkdir ffmpeg_build.user || exit
+          source "$HOME/.cargo/env" # for good measure
+          cargo clean
+          cargo build --release
+          sudo cp target/release/hdr10plus_tool /usr/local/bin/ || exit
+          cd
 
       - name: Build libogg
         run: |
@@ -82,12 +113,17 @@ jobs:
 
       - name: Build SVT-AV1
         run: |
+
+
           git clone --depth 1 https://github.com/gianni-rosato/svt-av1-psy.git
           cd svt-av1-psy/Build
           PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" \
             -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" \
             -DCMAKE_BUILD_TYPE=Release \
             -DBUILD_DEC=OFF \
+            -DENABLE_AVX512=ON \
+            -DCOVERAGE=OFF -DLIBDOVI_FOUND=1 \
+            -DLIBHDR10PLUS_RS_FOUND=1 \
             -DBUILD_SHARED_LIBS=OFF ..
           PATH="$HOME/bin:$PATH" make -j$(nproc)
           make install
