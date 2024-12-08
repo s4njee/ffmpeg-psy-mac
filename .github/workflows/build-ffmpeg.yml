@@ -35,7 +35,11 @@ jobs:
           sudo cp target/release/dovi_tool /usr/local/bin/ 
 
           cd dolby_vision
-          cargo install 
+          cargo install cargo-c
+          cargo cinstall --release \
+          --prefix="../ffmpeg_build.user" \
+          --libdir="../ffmpeg_build.user"/lib \
+          --includedir="../ffmpeg_build.user"/include
           cd ../ffmpeg_build.user || exit
           sudo rm /usr/local/include/libdovi /usr/local/lib/libdovi.*
           sudo cp ./lib/* /usr/local/lib/ -r || exit
