@@ -52,7 +52,17 @@ jobs:
           cargo clean
           cargo build --release
           sudo cp target/release/hdr10plus_tool /usr/local/bin/ || exit
-          cd
+
+          cd hdr10plus || exit
+          RUSTFLAGS="-C target-cpu=native" cargo cinstall --release \
+                --prefix="../ffmpeg_build.user" \
+                --libdir="../ffmpeg_build.user"/lib \
+                --includedir="../ffmpeg_build.user"/include
+          cd ../ffmpeg_build.user || exit
+          sudo rm /usr/local/include/libhdr10plus-rs /usr/local/lib/libhdr10plus-rs.*
+          sudo cp ./lib/* /usr/local/lib/ -r || exit
+          sudo cp ./include/* /usr/local/include/ -r
+
 
       - name: Build libogg
         run: |
