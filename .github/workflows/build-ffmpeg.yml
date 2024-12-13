@@ -102,7 +102,7 @@ jobs:
 
       - name: Build FFmpeg
         run: |
-          git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
+          git clone --depth 1 https://git.ffmpeg.org/ffmpeg.git ffmpeg
           cd ffmpeg
           git checkout master
           export LD_LIBRARY_PATH+=":/usr/local/lib"
