@@ -34,13 +34,14 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
+            ~/.cargo/bin    # Add this for cargo-c binary
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
 
       - name: Install cargo-c
-        run: cargo install cargo-c
+        run: which cargo-c || cargo install cargo-c  # Only install if not found
 
       - name: Build HDR Stuff
         run: |
