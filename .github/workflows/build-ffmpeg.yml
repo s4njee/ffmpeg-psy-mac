@@ -42,8 +42,8 @@ jobs:
           --libdir="../ffmpeg_build.user"/lib \
           --includedir="../ffmpeg_build.user"/include
           cd ../ffmpeg_build.user || exit
-          sudo cp ./lib/* /usr/local/lib/ -r || exit
-          sudo cp ./include/* /usr/local/include/ -r
+          sudo cp -r ./lib/* /usr/local/lib/  || exit
+          sudo cp -r ./include/* /usr/local/include/ 
           cd
 
           git clone --depth 1 https://github.com/quietvoid/hdr10plus_tool
@@ -60,8 +60,8 @@ jobs:
                 --libdir="../ffmpeg_build.user"/lib \
                 --includedir="../ffmpeg_build.user"/include
           cd ../ffmpeg_build.user || exit
-          sudo cp ./lib/* /usr/local/lib/ -r || exit
-          sudo cp ./include/* /usr/local/include/ -r
+          sudo cp -r ./lib/* /usr/local/lib/ || exit
+          sudo cp -r ./include/* /usr/local/include/
 
 
       - name: Build libogg
