@@ -57,6 +57,12 @@ jobs:
           sudo cp -r ./include/* /usr/local/include/ 
           cd
 
+          sudo mkdir -p /usr/local/lib/pkgconfig
+          sudo cp ./lib/pkgconfig/* /usr/local/lib/pkgconfig/ || true
+          cd ..
+
+          ls -la /usr/local/include/libdovi/rpu_parser.h || echo "Header not found!"
+
           git clone --depth 1 https://github.com/quietvoid/hdr10plus_tool
           cd hdr10plus_tool
           rm -rf ffmpeg_build.user && mkdir ffmpeg_build.user || exit
@@ -87,7 +93,9 @@ jobs:
             -DENABLE_AVX512=OFF \
             -DCOVERAGE=OFF -DLIBDOVI_FOUND=1 \
             -DLIBHDR10PLUS_RS_FOUND=1 \
-            -DBUILD_SHARED_LIBS=OFF ..
+            -DBUILD_SHARED_LIBS=OFF .. \
+            -DCMAKE_CXX_FLAGS="-I/usr/local/include" \
+            -DCMAKE_C_FLAGS="-I/usr/local/include" ..
           PATH="$HOME/bin:$PATH" make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ../..
