@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ffmpeg-builder-psy
+    runs-on: macos-latest
     env:
       CFLAGS: -O2 -pipe -fno-lto
       CXXFLAGS: -O2 -pipe -fno-lto
