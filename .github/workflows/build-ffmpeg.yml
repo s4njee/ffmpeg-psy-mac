@@ -20,12 +20,22 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Set up Homebrew paths
+        run: |
+          echo "/opt/homebrew/bin" >> $GITHUB_PATH
+          echo "PKG_CONFIG_PATH=/opt/homebrew/lib/pkgconfig" >> $GITHUB_ENV
+          
       - name: Install Dependencies
         run: |
           brew install dav1d aom fdk-aac libvpx opus opus-tools zip meson \
             nasm autogen automake libtool freetype fontconfig fribidi openssl rust
+          
       - name: Build HDR Stuff
         run: |
+
+          sudo mkdir -p /usr/local/lib
+          sudo mkdir -p /usr/local/include
 
           git clone --depth 1 https://github.com/quietvoid/dovi_tool
           cd dovi_tool || exit
@@ -70,7 +80,7 @@ jobs:
           cd ogg
           ./autogen.sh
           ./configure --prefix="$HOME/ffmpeg_build" --disable-shared
-          make -j$(nproc)
+          make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ..
 
@@ -83,7 +93,7 @@ jobs:
             ./configure --prefix="$HOME/ffmpeg_build" \
             --with-ogg="$HOME/ffmpeg_build" \
             --disable-shared
-          make -j$(nproc)
+          make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ..
 
@@ -94,7 +104,7 @@ jobs:
           ./configure --prefix="$HOME/ffmpeg_build" \
             --enable-nasm \
             --disable-shared
-          make -j$(nproc)
+          make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ..
 
@@ -117,7 +127,7 @@ jobs:
             --prefix="$HOME/ffmpeg_build" \
             --disable-shared \
             --enable-static
-          make -j$(nproc)
+          make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ..
 
@@ -131,11 +141,11 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" \
             -DCMAKE_BUILD_TYPE=Release \
             -DBUILD_DEC=OFF \
-            -DENABLE_AVX512=ON \
+            -DENABLE_AVX512=OFF \
             -DCOVERAGE=OFF -DLIBDOVI_FOUND=1 \
             -DLIBHDR10PLUS_RS_FOUND=1 \
             -DBUILD_SHARED_LIBS=OFF ..
-          PATH="$HOME/bin:$PATH" make -j$(nproc)
+          PATH="$HOME/bin:$PATH" make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ../..
 
@@ -148,7 +158,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" \
             -DENABLE_SHARED=off \
             -DHIGH_BIT_DEPTH=ON ../../source
-          PATH="$HOME/bin:$PATH" make -j$(nproc)
+          PATH="$HOME/bin:$PATH" make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ../../..
 
@@ -161,7 +171,7 @@ jobs:
             --bindir="$HOME/bin" \
             --enable-static \
             --enable-pic
-          PATH="$HOME/bin:$PATH" make -j$(nproc)
+          PATH="$HOME/bin:$PATH" make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ..
 
@@ -171,7 +181,7 @@ jobs:
           cd opus
           ./autogen.sh
           ./configure --prefix="$HOME/ffmpeg_build" --disable-shared
-          make -j$(nproc)
+          make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ..
 
@@ -181,7 +191,7 @@ jobs:
           cd fdk-aac
           autoreconf -fiv
           ./configure --prefix="$HOME/ffmpeg_build" --disable-shared
-          make -j$(nproc)
+          make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ..
 
@@ -209,7 +219,7 @@ jobs:
             --disable-unit-tests \
             --enable-vp9-highbitdepth \
             --as=yasm
-          PATH="$HOME/bin:$PATH" make -j$(nproc)
+          PATH="$HOME/bin:$PATH" make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ..
 
@@ -222,7 +232,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" \
             -DENABLE_TESTS=OFF \
             -DENABLE_NASM=on ../aom
-          PATH="$HOME/bin:$PATH" make -j$(nproc)
+          PATH="$HOME/bin:$PATH" make -j$(sysctl -n hw.physicalcpu)
           make install
           cd ..
 
@@ -252,7 +262,7 @@ jobs:
             --enable-static \
             --pkg-config-flags="--static" \
             --disable-shared
-          make -j$(nproc)
+          make -j$(sysctl -n hw.physicalcpu)
           ./ffmpeg -version
 
       - name: Package FFmpeg
