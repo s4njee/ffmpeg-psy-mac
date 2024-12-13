@@ -105,10 +105,10 @@ jobs:
           git clone --depth 1 https://git.ffmpeg.org/ffmpeg.git ffmpeg
           cd ffmpeg
           git checkout master
-          export LD_LIBRARY_PATH+=":/usr/local/lib"
-          PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure \
-            --extra-cflags="-I$HOME/ffmpeg_build/include" \
-            --extra-ldflags="-L$HOME/ffmpeg_build/lib" \
+          export LD_LIBRARY_PATH+=":/usr/local/lib:/opt/homebrew/lib"
+          PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig:/opt/homebrew/lib/pkgconfig" ./configure \
+            --extra-cflags="-I$HOME/ffmpeg_build/include -I/opt/homebrew/include" \
+            --extra-ldflags="-L$HOME/ffmpeg_build/lib -L/opt/homebrew/lib" \
             --extra-libs="-lpthread -lm" \
             --enable-gpl \
             --enable-libx264 \
