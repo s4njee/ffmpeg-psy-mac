@@ -17,20 +17,11 @@ jobs:
       LDFLAGS: -O2 -pipe -fno-lto
 
     steps:
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Set up Homebrew paths
-        run: |
-          echo "/opt/homebrew/bin" >> $GITHUB_PATH
-          echo "PKG_CONFIG_PATH=/opt/homebrew/lib/pkgconfig" >> $GITHUB_ENV
-
       - name: Install Dependencies
         run: |
-          brew install dav1d aom fdk-aac libvpx opus opus-tools zip meson \
-            nasm autogen automake libtool freetype fontconfig fribidi openssl rust libvorbis \
-            libogg lame harfbuzz libass x264 x265
+          brew install dav1d aom fdk-aac libvpx opus zip \
+            libvorbis \
+            libogg lame libass x264 x265
           
       - name: Build HDR Stuff
         run: |
@@ -39,42 +30,28 @@ jobs:
           sudo mkdir -p /usr/local/include
 
           git clone --depth 1 https://github.com/quietvoid/dovi_tool
-          cd dovi_tool || exit
-          rm -rf ffmpeg_build.user && mkdir ffmpeg_build.user || exit
-          source "$HOME/.cargo/env" # for good measure
-          cargo clean
-          cargo build --release
-          sudo cp target/release/dovi_tool /usr/local/bin/ 
-
-          cd dolby_vision
+          cd dovi_tool/dolby_vision
           cargo install cargo-c
           cargo cinstall --release \
-          --prefix="../ffmpeg_build.user" \
-          --libdir="../ffmpeg_build.user"/lib \
-          --includedir="../ffmpeg_build.user"/include
-          cd ../ffmpeg_build.user || exit
-          sudo cp -r ./lib/* /usr/local/lib/  || exit
-          sudo cp -r ./include/* /usr/local/include/ 
+            --prefix="../ffmpeg_build.user" \
+            --libdir="../ffmpeg_build.user"/lib \
+            --includedir="../ffmpeg_build.user"/include
+          cd ../ffmpeg_build.user
+          sudo cp -r ./lib/* /usr/local/lib/
+          sudo cp -r ./include/* /usr/local/include/
           cd
 
           sudo mkdir -p /usr/local/lib/pkgconfig
           sudo cp ./lib/pkgconfig/* /usr/local/lib/pkgconfig/ || true
 
           git clone --depth 1 https://github.com/quietvoid/hdr10plus_tool
-          cd hdr10plus_tool
-          rm -rf ffmpeg_build.user && mkdir ffmpeg_build.user || exit
-          source "$HOME/.cargo/env" # for good measure
-          cargo clean
-          cargo build --release
-          sudo cp target/release/hdr10plus_tool /usr/local/bin/ || exit
-
-          cd hdr10plus || exit
+          cd hdr10plus_tool/hdr10plus
           RUSTFLAGS="-C target-cpu=native" cargo cinstall --release \
-                --prefix="../ffmpeg_build.user" \
-                --libdir="../ffmpeg_build.user"/lib \
-                --includedir="../ffmpeg_build.user"/include
-          cd ../ffmpeg_build.user || exit
-          sudo cp -r ./lib/* /usr/local/lib/ || exit
+            --prefix="../ffmpeg_build.user" \
+            --libdir="../ffmpeg_build.user"/lib \
+            --includedir="../ffmpeg_build.user"/include
+          cd ../ffmpeg_build.user
+          sudo cp -r ./lib/* /usr/local/lib/
           sudo cp -r ./include/* /usr/local/include/
 
           sudo mkdir -p /usr/local/lib/pkgconfig
