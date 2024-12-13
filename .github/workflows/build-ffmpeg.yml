@@ -18,12 +18,8 @@ jobs:
       CXXFLAGS: -O3 -march=native -mtune=native
       LDFLAGS: -O3
     steps:
-      - name: Cache Homebrew downloads
-        uses: actions/cache@v3
-        with:
-          path: ~/Library/Caches/Homebrew
-          key: ${{ runner.os }}-brew-${{ hashFiles('.github/workflows/build.yml') }}
 
+      
       - name: Install Dependencies
         run: |
           brew install dav1d aom fdk-aac libvpx opus zip \
