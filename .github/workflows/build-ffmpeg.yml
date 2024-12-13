@@ -29,7 +29,7 @@ jobs:
       - name: Install Dependencies
         run: |
           brew install dav1d aom fdk-aac libvpx opus opus-tools zip meson \
-            nasm autogen automake libtool freetype fontconfig fribidi openssl rust vorbis \
+            nasm autogen automake libtool freetype fontconfig fribidi openssl rust libvorbis \
             libogg lame harfbuzz libass x264 x265
           
       - name: Build HDR Stuff
