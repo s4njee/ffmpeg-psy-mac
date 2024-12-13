@@ -12,10 +12,11 @@ jobs:
   build:
     runs-on: macos-latest
     env:
-      CFLAGS: -O2 -pipe -fno-lto
-      CXXFLAGS: -O2 -pipe -fno-lto
-      LDFLAGS: -O2 -pipe -fno-lto
-
+      CC: clang
+      CXX: clang++
+      CFLAGS: -O3 -march=native -mtune=native
+      CXXFLAGS: -O3 -march=native -mtune=native
+      LDFLAGS: -O3
     steps:
       - name: Install Dependencies
         run: |
