@@ -59,9 +59,6 @@ jobs:
 
           sudo mkdir -p /usr/local/lib/pkgconfig
           sudo cp ./lib/pkgconfig/* /usr/local/lib/pkgconfig/ || true
-          cd ..
-
-          ls -la /usr/local/include/libdovi/rpu_parser.h || echo "Header not found!"
 
           git clone --depth 1 https://github.com/quietvoid/hdr10plus_tool
           cd hdr10plus_tool
@@ -79,6 +76,9 @@ jobs:
           cd ../ffmpeg_build.user || exit
           sudo cp -r ./lib/* /usr/local/lib/ || exit
           sudo cp -r ./include/* /usr/local/include/
+
+          sudo mkdir -p /usr/local/lib/pkgconfig
+          sudo cp ./lib/pkgconfig/* /usr/local/lib/pkgconfig/ || true
 
       - name: Build SVT-AV1
         run: |
